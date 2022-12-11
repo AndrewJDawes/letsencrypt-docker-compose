@@ -6,6 +6,9 @@ trap exit INT TERM
 
 cd /workdir
 
+# Reload mounted config which might have new domains
+source config.env
+
 if [ -z "$DOMAINS" ]; then
   echo "DOMAINS environment variable is not set"
   exit 1;
