@@ -1,0 +1,15 @@
+.env
+config.env
+!data/
+data/*
+!data/etc/
+data/etc/*
+!data/etc/nginx/
+data/etc/nginx/*
+!data/etc/nginx/conf.d/
+data/etc/nginx/conf.d/*
+!data/etc/nginx/conf.d/default.conf.example
+!data/etc/nginx/sites/
+data/etc/nginx/sites/*
+!data/etc/nginx/sites/site.conf.example
+!data/etc/nginx/sites/ignoreme.example
