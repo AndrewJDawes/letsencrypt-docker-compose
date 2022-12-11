@@ -3,16 +3,15 @@ version: "2"
 services:
   nginx:
     build: ./nginx
-    image: evgeniy-khyst/nginx
+    image: letsencrypt-docker-compose/nginx
     env_file:
       - ./config.env
     volumes:
       - ./data/etc/nginx/sites:/etc/nginx/sites
       - ./data/etc/nginx/conf.d:/etc/nginx/conf.d
-      - letsencrypt_certs:/etc/letsencrypt
       - certbot_acme_challenge:/var/www/certbot
+      - site_certs:/etc/nginx/site_certs
       - global_certs:/etc/nginx/global_certs
-      - dummy_certs:/etc/nginx/dummy_certs
     ports:
       - "80:80"
       - "443:443"
@@ -20,28 +19,29 @@ services:
 
   certbot:
     build: ./certbot
-    image: evgeniy-khyst/certbot
+    image: letsencrypt-docker-compose/certbot
     env_file:
       - ./config.env
     volumes:
-      - letsencrypt_certs:/etc/letsencrypt
       - certbot_acme_challenge:/var/www/certbot
+      - letsencrypt_certs:/etc/letsencrypt
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./:/workdir:ro
+    restart: unless-stopped
 
   cron:
     build: ./cron
-    image: evgeniy-khyst/cron
-    environment:
-      COMPOSE_PROJECT_NAME: "${COMPOSE_PROJECT_NAME}"
+    image: letsencrypt-docker-compose/cron
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ./:/workdir:ro
     restart: unless-stopped
 
 volumes:
-  global_certs:
-    external: true
-  dummy_certs:
+  certbot_acme_challenge:
+  site_certs:
     external: true
   letsencrypt_certs:
     external: true
-  certbot_acme_challenge:
+  global_certs:
+    external: true

@@ -1,9 +1,20 @@
 FROM certbot/certbot:v1.29.0
 
-RUN apk add --no-cache bash
+RUN apk update && \
+    apk add --no-cache bash --no-cache docker-cli docker-cli-compose
 
 COPY certbot.sh /opt/
 
 RUN chmod +x /opt/certbot.sh
 
-ENTRYPOINT ["/opt/certbot.sh"]
+RUN apk update && \
+    apk add --no-cache docker-cli docker-cli-compose
+
+WORKDIR /workdir
+
+COPY cronfile /cronfile
+RUN chmod 0644 /cronfile
+RUN /usr/bin/crontab /cronfile
+
+# ENTRYPOINT ["/opt/certbot.sh"]
+CMD ["crond", "-f", "-l", "0"]

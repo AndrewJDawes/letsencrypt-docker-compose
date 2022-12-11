@@ -45,8 +45,8 @@ But for Docker Compose there is no such popular and robust tool for TLS certific
 The example supports separate TLS certificates for multiple domain names, e.g. `example.com`, `anotherdomain.net` etc.
 For simplicity this example deals with the following domain names:
 
--   `test1.evgeniy-khyst.com`
--   `test2.evgeniy-khyst.com`
+-   `test1.letsencrypt-docker-compose.com`
+-   `test2.letsencrypt-docker-compose.com`
 
 The idea is simple. There are 3 containers:
 
@@ -79,20 +79,20 @@ Also, consider creating CNAME records for the `www` subdomains.
 
 **DNS records**
 
-| Type  | Hostname                      | Value                                    |
-| ----- | ----------------------------- | ---------------------------------------- |
-| A     | `test1.evgeniy-khyst.com`     | directs to IP address `X.X.X.X`          |
-| A     | `test2.evgeniy-khyst.com`     | directs to IP address `X.X.X.X`          |
-| CNAME | `www.test1.evgeniy-khyst.com` | is an alias of `test1.evgeniy-khyst.com` |
-| CNAME | `www.test2.evgeniy-khyst.com` | is an alias of `test2.evgeniy-khyst.com` |
+| Type  | Hostname                                   | Value                                                 |
+| ----- | ------------------------------------------ | ----------------------------------------------------- |
+| A     | `test1.letsencrypt-docker-compose.com`     | directs to IP address `X.X.X.X`                       |
+| A     | `test2.letsencrypt-docker-compose.com`     | directs to IP address `X.X.X.X`                       |
+| CNAME | `www.test1.letsencrypt-docker-compose.com` | is an alias of `test1.letsencrypt-docker-compose.com` |
+| CNAME | `www.test2.letsencrypt-docker-compose.com` | is an alias of `test2.letsencrypt-docker-compose.com` |
 
 ### <a id="f24b6b41d1afb4cf65b765cf05a44ac1"></a>Step 1 - Edit domain names and emails in the configuration
 
 Specify your domain names and contact emails for these domains with space as delimiter in the [`config.env`](config.env):
 
 ```bash
-DOMAINS="test1.evgeniy-khyst.com test2.evgeniy-khyst.com"
-CERTBOT_EMAILS="info@evgeniy-khyst.com info@evgeniy-khyst.com"
+DOMAINS="test1.letsencrypt-docker-compose.com test2.letsencrypt-docker-compose.com"
+CERTBOT_EMAILS="info@letsencrypt-docker-compose.com info@letsencrypt-docker-compose.com"
 ```
 
 For two and more domains separated by space use double quotes (`"`) around the `DOMAINS` and `CERTBOT_EMAILS` variables.
@@ -100,16 +100,16 @@ For two and more domains separated by space use double quotes (`"`) around the `
 For a single domain double quotes can be omitted:
 
 ```bash
-DOMAINS=test1.evgeniy-khyst.com
-CERTBOT_EMAILS=info@evgeniy-khyst.com
+DOMAINS=test1.letsencrypt-docker-compose.com
+CERTBOT_EMAILS=info@letsencrypt-docker-compose.com
 ```
 
 ### <a id="3414177b596079dbf39b1b7fa10234c6"></a>Step 2 - Configure Nginx virtual hosts
 
 For each domain configure the Nginx [`server` block](https://nginx.org/en/docs/http/ngx_http_core_module.html#server) by updating `vhosts/${domain}.conf`:
 
--   `vhosts/test1.evgeniy-khyst.com.conf`
--   `vhosts/test2.evgeniy-khyst.com.conf`
+-   `vhosts/test1.letsencrypt-docker-compose.com.conf`
+-   `vhosts/test2.letsencrypt-docker-compose.com.conf`
 
 #### <a id="cdbe8e85146b30abdbb3425163a3b7a2"></a>Serving static content
 
@@ -181,8 +181,8 @@ Reloading Nginx configuration
 
 For each domain open in browser `https://${domain}` and `https://www.${domain}` and verify that staging Let's Encrypt certificates are working:
 
--   https://test1.evgeniy-khyst.com, https://www.test1.evgeniy-khyst.com
--   https://test2.evgeniy-khyst.com, https://www.test2.evgeniy-khyst.com
+-   https://test1.letsencrypt-docker-compose.com, https://www.test1.letsencrypt-docker-compose.com
+-   https://test2.letsencrypt-docker-compose.com, https://www.test2.letsencrypt-docker-compose.com
 
 Certificates issued by `(STAGING) Let's Encrypt` are considered not secure by browsers.
 
@@ -234,7 +234,7 @@ docker compose exec --no-TTY nginx nginx -s reload
 
 ## <a id="35a7ab6c3c12c73a0fce287690b1c216"></a>Adding a new domain to a running solution
 
-Let's add a third domain `test3.evgeniy-khyst.com` to a running solution.
+Let's add a third domain `test3.letsencrypt-docker-compose.com` to a running solution.
 
 ### <a id="22e1d8b6115f1b1aaf65d61ee2557e52"></a>Step 0 - Create a new DNS records
 
@@ -242,34 +242,34 @@ Create DNS A record and CNAME record for `www` subdomain.
 
 **DNS records**
 
-| Type  | Hostname                      | Value                                    |
-| ----- | ----------------------------- | ---------------------------------------- |
-| A     | `test3.evgeniy-khyst.com`     | directs to IP address `X.X.X.X`          |
-| CNAME | `www.test3.evgeniy-khyst.com` | is an alias of `test3.evgeniy-khyst.com` |
+| Type  | Hostname                                   | Value                                                 |
+| ----- | ------------------------------------------ | ----------------------------------------------------- |
+| A     | `test3.letsencrypt-docker-compose.com`     | directs to IP address `X.X.X.X`                       |
+| CNAME | `www.test3.letsencrypt-docker-compose.com` | is an alias of `test3.letsencrypt-docker-compose.com` |
 
 ### <a id="d0a4d4424e2e96c4dbe1a28dfddf7224"></a>Step 1 - Add domain name and email to the configuration
 
-Add a new domain name (`test3.evgeniy-khyst.com`) and contact email to the [`config.env`](config.env):
+Add a new domain name (`test3.letsencrypt-docker-compose.com`) and contact email to the [`config.env`](config.env):
 
 ```properties
-DOMAINS="test1.evgeniy-khyst.com test2.evgeniy-khyst.com test3.evgeniy-khyst.com"
-CERTBOT_EMAILS="info@evgeniy-khyst.com info@evgeniy-khyst.com info@evgeniy-khyst.com"
+DOMAINS="test1.letsencrypt-docker-compose.com test2.letsencrypt-docker-compose.com test3.letsencrypt-docker-compose.com"
+CERTBOT_EMAILS="info@letsencrypt-docker-compose.com info@letsencrypt-docker-compose.com info@letsencrypt-docker-compose.com"
 ```
 
 ### <a id="96dc528b7365f5a119bb2b1893f60700"></a>Step 2 - Configure a new Nginx virtual hosts
 
-Create a virtual host configuration file `vhosts/test3.evgeniy-khyst.com.conf` for the new domain.
+Create a virtual host configuration file `vhosts/test3.letsencrypt-docker-compose.com.conf` for the new domain.
 
 For example, for serving static content use the following configuration:
 
 ```
 location / {
-    root /var/www/html/test3.evgeniy-khyst.com;
+    root /var/www/html/test3.letsencrypt-docker-compose.com;
     index index.html index.htm;
 }
 ```
 
-Create a webroot `html/test3.evgeniy-khyst.com` and add static content.
+Create a webroot `html/test3.letsencrypt-docker-compose.com` and add static content.
 
 ### <a id="38f75935bf20b547d1f6788791645d5d"></a>Step 3 - Restart Docker containers
 
@@ -293,13 +293,13 @@ docker compose logs -f
     -   [`options-ssl-nginx.conf`](nginx/options-ssl-nginx.conf) - a configuration to get A+ rating at [SSL Server Test](https://www.ssllabs.com/ssltest/). Included in `site.conf.tpl`
     -   [`hsts.conf`](nginx/hsts.conf) - HTTP Strict Transport Security (HSTS) policy. Included in `site.conf.tpl`
 -   [`vhosts/`](vhosts/)
-    -   [`test1.evgeniy-khyst.com.conf`](vhosts/test1.evgeniy-khyst.com.conf) - `server` block configuration for serving static content. Included in `site.conf.tpl` (`include /etc/nginx/vhosts/${domain}.conf;`)
-    -   [`test2.evgeniy-khyst.com.conf`](vhosts/test2.evgeniy-khyst.com.conf) - `server` block configuration for serving static content. Included in `site.conf.tpl` (`include /etc/nginx/vhosts/${domain}.conf;`)
+    -   [`test1.letsencrypt-docker-compose.com.conf`](vhosts/test1.letsencrypt-docker-compose.com.conf) - `server` block configuration for serving static content. Included in `site.conf.tpl` (`include /etc/nginx/vhosts/${domain}.conf;`)
+    -   [`test2.letsencrypt-docker-compose.com.conf`](vhosts/test2.letsencrypt-docker-compose.com.conf) - `server` block configuration for serving static content. Included in `site.conf.tpl` (`include /etc/nginx/vhosts/${domain}.conf;`)
 -   [`html/`](html/)
-    -   [`test1.evgeniy-khyst.com/`](html/test1.evgeniy-khyst.com/) - directory mounted as a webroot for `test1.evgeniy-khyst.com`. Configured in `vhosts/test1.evgeniy-khyst.com.conf`
-        -   [`index.html`](html/test1.evgeniy-khyst.com/index.html)
-    -   [`test2.evgeniy-khyst.com/`](html/test2.evgeniy-khyst.com/) - directory mounted as a webroot for `test2.evgeniy-khyst.com`. Configured in `vhosts/test2.evgeniy-khyst.com.conf`
-        -   [`index.html`](html/test2.evgeniy-khyst.com/index.html)
+    -   [`test1.letsencrypt-docker-compose.com/`](html/test1.letsencrypt-docker-compose.com/) - directory mounted as a webroot for `test1.letsencrypt-docker-compose.com`. Configured in `vhosts/test1.letsencrypt-docker-compose.com.conf`
+        -   [`index.html`](html/test1.letsencrypt-docker-compose.com/index.html)
+    -   [`test2.letsencrypt-docker-compose.com/`](html/test2.letsencrypt-docker-compose.com/) - directory mounted as a webroot for `test2.letsencrypt-docker-compose.com`. Configured in `vhosts/test2.letsencrypt-docker-compose.com.conf`
+        -   [`index.html`](html/test2.letsencrypt-docker-compose.com/index.html)
 -   [`certbot/`](certbot/)
     -   [`Dockerfile`](certbot/Dockerfile)
     -   [`certbot.sh`](certbot/certbot.sh) - entrypoint script
@@ -312,8 +312,8 @@ docker compose logs -f
 To adapt the example to your domain names you need to change only [`config.env`](config.env):
 
 ```properties
-DOMAINS="test1.evgeniy-khyst.com test2.evgeniy-khyst.com"
-CERTBOT_EMAILS="info@evgeniy-khyst.com info@evgeniy-khyst.com"
+DOMAINS="test1.letsencrypt-docker-compose.com test2.letsencrypt-docker-compose.com"
+CERTBOT_EMAILS="info@letsencrypt-docker-compose.com info@letsencrypt-docker-compose.com"
 CERTBOT_TEST_CERT=1
 CERTBOT_RSA_KEY_SIZE=4096
 ```
