@@ -10,8 +10,8 @@ services:
       - ./data/etc/nginx/sites:/etc/nginx/sites:ro
       - ./data/etc/nginx/conf.d:/etc/nginx/conf.d:ro
       - certbot_acme_challenge:/var/www/certbot:ro
-      - site_certs:/etc/nginx/site_certs:ro
-      - global_certs:/etc/nginx/global_certs:ro
+      - site_certs:/etc/nginx/site_certs:rw
+      - global_certs:/etc/nginx/global_certs:rw
     ports:
       - "80:80"
       - "443:443"
