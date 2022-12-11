@@ -1,3 +1,3 @@
 # Run cron
 SHELL=/bin/bash
-*/5 * * * * echo "$(date): Cron" >> /cron.log 2>&1 && /bin/bash /opt/cerbot.sh >> /cron.log 2>&1
+*/5 * * * * echo "$(date): Cron" >> /cron.log 2>&1 && /bin/bash /opt/certbot.sh >> /cron.log 2>&1
