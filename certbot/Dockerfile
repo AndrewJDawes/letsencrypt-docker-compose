@@ -1,4 +1,4 @@
-FROM certbot/certbot:v1.29.0
+FROM certbot/certbot:latest
 
 RUN apk update && \
     apk add --no-cache bash --no-cache docker-cli docker-cli-compose
@@ -17,4 +17,4 @@ RUN chmod 0644 /cronfile
 RUN /usr/bin/crontab /cronfile
 
 # ENTRYPOINT ["/opt/certbot.sh"]
-CMD ["crond", "-f", "-l", "0"]
+ENTRYPOINT ["crond", "-f", "-l", "0"]

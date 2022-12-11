@@ -25,7 +25,9 @@ server {
     include /etc/nginx/includes/hsts.conf;
 
     location / {
-        set $upstream ${ip}:${port};
+        # Where ${ip} must be an IP, not hostname, and is likely the IP of the HOST container is running on - or another host.
+        # Protocol must be specified - leave as http unless you also have a cert installed on upstream
+        set $upstream http://${ip}:${port};
         proxy_pass $upstream;
     }
 }
