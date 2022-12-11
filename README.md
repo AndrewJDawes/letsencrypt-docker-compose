@@ -1,31 +1,31 @@
 # Nginx and Let’s Encrypt with Docker Compose in less than 3 minutes
 
-- [Overview](#3b878279a04dc47d60932cb294d96259)
-- [Initial setup](#1231369e1218613623e1b520c27ce190)
-  - [Prerequisites](#ee68e5b99222bbc29a480fcb0d1d6ee2)
-  - [Step 0 - Create DNS records](#288c0835566de0a785d19451eac904a0)
-  - [Step 1 - Edit domain names and emails in the configuration](#f24b6b41d1afb4cf65b765cf05a44ac1)
-  - [Step 2 - Configure Nginx virtual hosts](#3414177b596079dbf39b1b7fa10234c6)
-    - [Serving static content](#cdbe8e85146b30abdbb3425163a3b7a2)
-    - [Proxying all requests to a backend server](#c156f4dfc046a4229590da3484f9478d)
-  - [Step 3 - Create named Docker volumes for dummy and Let's Encrypt TLS certificates](#b56e2fee036d09a35898559d9889bae7)
-  - [Step 4 - Build images and start containers using staging Let's Encrypt server](#4952d0670f6fb00a0337d2251621508a)
-  - [Step 5 - verify HTTPS works with the staging certificates](#46d3804a4859874ba8b6ced6013b9966)
-  - [Step 6 - Switch to production Let's Encrypt server](#04529d361bbd6586ebcf267da5f0dfd7)
-  - [Step 7 - verify HTTPS works with the production certificates](#70d8ba04ba9117ff3ba72a9413131351)
-- [Reloading Nginx configuration without downtime](#45a36b34f024f33bed82349e9096051a)
-- [Adding a new domain to a running solution](#35a7ab6c3c12c73a0fce287690b1c216)
-  - [Step 0 - Create a new DNS records](#22e1d8b6115f1b1aaf65d61ee2557e52)
-  - [Step 1 - Add domain name and email to the configuration](#d0a4d4424e2e96c4dbe1a28dfddf7224)
-  - [Step 2 - Configure a new Nginx virtual hosts](#96dc528b7365f5a119bb2b1893f60700)
-  - [Step 3 - Restart Docker containers](#38f75935bf20b547d1f6788791645d5d)
-- [Directory structure](#7cd115332ea5785828a7a0b5249f0755)
-- [Configuration file structure](#bcd6f4d91c9b46c9af4d5b8c4a07db77)
-- [SSL configuration for A+ rating](#f9987558925ac3a1ca42e184e10d7b73)
-- [Removing a domain name from a running solution](#90d955c4-2684-11ed-a261-0242ac120002)
-  - [Step 1 - Remove the .conf file](#90d9588a-2684-11ed-a261-0242ac120002)
-  - [Step 2 - Remove domain name](#90d959b6-2684-11ed-a261-0242ac120002)
-  - [Step 3 - Update Docker containers](#90d95ace-2684-11ed-a261-0242ac120002)
+-   [Overview](#3b878279a04dc47d60932cb294d96259)
+-   [Initial setup](#1231369e1218613623e1b520c27ce190)
+    -   [Prerequisites](#ee68e5b99222bbc29a480fcb0d1d6ee2)
+    -   [Step 0 - Create DNS records](#288c0835566de0a785d19451eac904a0)
+    -   [Step 1 - Edit domain names and emails in the configuration](#f24b6b41d1afb4cf65b765cf05a44ac1)
+    -   [Step 2 - Configure Nginx virtual hosts](#3414177b596079dbf39b1b7fa10234c6)
+        -   [Serving static content](#cdbe8e85146b30abdbb3425163a3b7a2)
+        -   [Proxying all requests to a backend server](#c156f4dfc046a4229590da3484f9478d)
+    -   [Step 3 - Create named Docker volumes for dummy and Let's Encrypt TLS certificates](#b56e2fee036d09a35898559d9889bae7)
+    -   [Step 4 - Build images and start containers using staging Let's Encrypt server](#4952d0670f6fb00a0337d2251621508a)
+    -   [Step 5 - verify HTTPS works with the staging certificates](#46d3804a4859874ba8b6ced6013b9966)
+    -   [Step 6 - Switch to production Let's Encrypt server](#04529d361bbd6586ebcf267da5f0dfd7)
+    -   [Step 7 - verify HTTPS works with the production certificates](#70d8ba04ba9117ff3ba72a9413131351)
+-   [Reloading Nginx configuration without downtime](#45a36b34f024f33bed82349e9096051a)
+-   [Adding a new domain to a running solution](#35a7ab6c3c12c73a0fce287690b1c216)
+    -   [Step 0 - Create a new DNS records](#22e1d8b6115f1b1aaf65d61ee2557e52)
+    -   [Step 1 - Add domain name and email to the configuration](#d0a4d4424e2e96c4dbe1a28dfddf7224)
+    -   [Step 2 - Configure a new Nginx virtual hosts](#96dc528b7365f5a119bb2b1893f60700)
+    -   [Step 3 - Restart Docker containers](#38f75935bf20b547d1f6788791645d5d)
+-   [Directory structure](#7cd115332ea5785828a7a0b5249f0755)
+-   [Configuration file structure](#bcd6f4d91c9b46c9af4d5b8c4a07db77)
+-   [SSL configuration for A+ rating](#f9987558925ac3a1ca42e184e10d7b73)
+-   [Removing a domain name from a running solution](#90d955c4-2684-11ed-a261-0242ac120002)
+    -   [Step 1 - Remove the .conf file](#90d9588a-2684-11ed-a261-0242ac120002)
+    -   [Step 2 - Remove domain name](#90d959b6-2684-11ed-a261-0242ac120002)
+    -   [Step 3 - Update Docker containers](#90d95ace-2684-11ed-a261-0242ac120002)
 
 <!-- Table of contents is made with https://github.com/evgeniy-khist/markdown-toc -->
 
@@ -45,14 +45,14 @@ But for Docker Compose there is no such popular and robust tool for TLS certific
 The example supports separate TLS certificates for multiple domain names, e.g. `example.com`, `anotherdomain.net` etc.
 For simplicity this example deals with the following domain names:
 
-- `test1.evgeniy-khyst.com`
-- `test2.evgeniy-khyst.com`
+-   `test1.evgeniy-khyst.com`
+-   `test2.evgeniy-khyst.com`
 
 The idea is simple. There are 3 containers:
 
-- **Nginx**
-- **Certbot** - for obtaining and renewing certificates
-- **Cron** - for triggering certificates renewal once a day
+-   **Nginx**
+-   **Certbot** - for obtaining and renewing certificates
+-   **Cron** - for triggering certificates renewal once a day
 
 The sequence of actions:
 
@@ -68,9 +68,9 @@ The sequence of actions:
 2. You have a domain name
 3. You have a server with a publicly routable IP address
 4. You have cloned this repository (or created and cloned a [fork](https://github.com/evgeniy-khist/letsencrypt-docker-compose/fork)):
-   ```bash
-   git clone https://github.com/evgeniy-khist/letsencrypt-docker-compose.git
-   ```
+    ```bash
+    git clone https://github.com/evgeniy-khist/letsencrypt-docker-compose.git
+    ```
 
 ### <a id="288c0835566de0a785d19451eac904a0"></a>Step 0 - Create DNS records
 
@@ -108,8 +108,8 @@ CERTBOT_EMAILS=info@evgeniy-khyst.com
 
 For each domain configure the Nginx [`server` block](https://nginx.org/en/docs/http/ngx_http_core_module.html#server) by updating `vhosts/${domain}.conf`:
 
-- `vhosts/test1.evgeniy-khyst.com.conf`
-- `vhosts/test2.evgeniy-khyst.com.conf`
+-   `vhosts/test1.evgeniy-khyst.com.conf`
+-   `vhosts/test2.evgeniy-khyst.com.conf`
 
 #### <a id="cdbe8e85146b30abdbb3425163a3b7a2"></a>Serving static content
 
@@ -124,11 +124,11 @@ Make sure `html/my-domain` directory (relative to the repository root) exists an
 
 ```yaml
 services:
-  nginx:
-  #...
-  volumes:
+    nginx:
     #...
-    - ./html:/var/www/html
+    volumes:
+        #...
+        - ./html:/var/www/html
 ```
 
 #### <a id="c156f4dfc046a4229590da3484f9478d"></a>Proxying all requests to a backend server
@@ -147,11 +147,11 @@ location / {
 
 ```yaml
 services:
-  my-backend:
-    image: example.com/my-backend:1.0.0
-    #...
-    ports:
-      - "8080"
+    my-backend:
+        image: example.com/my-backend:1.0.0
+        #...
+        ports:
+            - "8080"
 ```
 
 ### <a id="b56e2fee036d09a35898559d9889bae7"></a>Step 3 - Create named Docker volumes for dummy and Let's Encrypt TLS certificates
@@ -181,8 +181,8 @@ Reloading Nginx configuration
 
 For each domain open in browser `https://${domain}` and `https://www.${domain}` and verify that staging Let's Encrypt certificates are working:
 
-- https://test1.evgeniy-khyst.com, https://www.test1.evgeniy-khyst.com
-- https://test2.evgeniy-khyst.com, https://www.test2.evgeniy-khyst.com
+-   https://test1.evgeniy-khyst.com, https://www.test1.evgeniy-khyst.com
+-   https://test2.evgeniy-khyst.com, https://www.test2.evgeniy-khyst.com
 
 Certificates issued by `(STAGING) Let's Encrypt` are considered not secure by browsers.
 
@@ -281,31 +281,31 @@ docker compose logs -f
 
 ## <a id="7cd115332ea5785828a7a0b5249f0755"></a>Directory structure
 
-- [`docker-compose.yml`](docker-compose.yml)
-- [`.env`](.env) - specifies `COMPOSE_PROJECT_NAME` to make container names independent from the base directory name
-- [`config.env`](config.env) - specifies project configuration, e.g. domain names, emails etc.
-- [`nginx/`](nginx/)
-  - [`Dockerfile`](nginx/Dockerfile)
-  - [`nginx.sh`](nginx/nginx.sh) - entrypoint script
-  - [`default.conf`](nginx/default.conf) - common settings for all domains. The file is copied to `/etc/nginx/conf.d/`
-  - [`gzip.conf`](nginx/gzip.conf) - Gzip compression. Included in `default.conf`
-  - [`site.conf.tpl`](nginx/site.conf.tpl) - virtual host configuration template used to create configuration files `/etc/nginx/sites/${domain}.conf` included in `default.conf`
-  - [`options-ssl-nginx.conf`](nginx/options-ssl-nginx.conf) - a configuration to get A+ rating at [SSL Server Test](https://www.ssllabs.com/ssltest/). Included in `site.conf.tpl`
-  - [`hsts.conf`](nginx/hsts.conf) - HTTP Strict Transport Security (HSTS) policy. Included in `site.conf.tpl`
-- [`vhosts/`](vhosts/)
-  - [`test1.evgeniy-khyst.com.conf`](vhosts/test1.evgeniy-khyst.com.conf) - `server` block configuration for serving static content. Included in `site.conf.tpl` (`include /etc/nginx/vhosts/${domain}.conf;`)
-  - [`test2.evgeniy-khyst.com.conf`](vhosts/test2.evgeniy-khyst.com.conf) - `server` block configuration for serving static content. Included in `site.conf.tpl` (`include /etc/nginx/vhosts/${domain}.conf;`)
-- [`html/`](html/)
-  - [`test1.evgeniy-khyst.com/`](html/test1.evgeniy-khyst.com/) - directory mounted as a webroot for `test1.evgeniy-khyst.com`. Configured in `vhosts/test1.evgeniy-khyst.com.conf`
-    - [`index.html`](html/test1.evgeniy-khyst.com/index.html)
-  - [`test2.evgeniy-khyst.com/`](html/test2.evgeniy-khyst.com/) - directory mounted as a webroot for `test2.evgeniy-khyst.com`. Configured in `vhosts/test2.evgeniy-khyst.com.conf`
-    - [`index.html`](html/test2.evgeniy-khyst.com/index.html)
-- [`certbot/`](certbot/)
-  - [`Dockerfile`](certbot/Dockerfile)
-  - [`certbot.sh`](certbot/certbot.sh) - entrypoint script
-- [`cron/`](cron/)
-  - [`Dockerfile`](cron/Dockerfile)
-  - [`renew_certs.sh`](cron/renew_certs.sh) - script executed on a daily basis to try to renew certificates
+-   [`docker-compose.yml`](docker-compose.yml)
+-   [`.env`](.env) - specifies `COMPOSE_PROJECT_NAME` to make container names independent from the base directory name
+-   [`config.env`](config.env) - specifies project configuration, e.g. domain names, emails etc.
+-   [`nginx/`](nginx/)
+    -   [`Dockerfile`](nginx/Dockerfile)
+    -   [`nginx.sh`](nginx/nginx.sh) - entrypoint script
+    -   [`default.conf`](nginx/default.conf) - common settings for all domains. The file is copied to `/etc/nginx/conf.d/`
+    -   [`gzip.conf`](nginx/gzip.conf) - Gzip compression. Included in `default.conf`
+    -   [`site.conf.tpl`](nginx/site.conf.tpl) - virtual host configuration template used to create configuration files `/etc/nginx/sites/${domain}.conf` included in `default.conf`
+    -   [`options-ssl-nginx.conf`](nginx/options-ssl-nginx.conf) - a configuration to get A+ rating at [SSL Server Test](https://www.ssllabs.com/ssltest/). Included in `site.conf.tpl`
+    -   [`hsts.conf`](nginx/hsts.conf) - HTTP Strict Transport Security (HSTS) policy. Included in `site.conf.tpl`
+-   [`vhosts/`](vhosts/)
+    -   [`test1.evgeniy-khyst.com.conf`](vhosts/test1.evgeniy-khyst.com.conf) - `server` block configuration for serving static content. Included in `site.conf.tpl` (`include /etc/nginx/vhosts/${domain}.conf;`)
+    -   [`test2.evgeniy-khyst.com.conf`](vhosts/test2.evgeniy-khyst.com.conf) - `server` block configuration for serving static content. Included in `site.conf.tpl` (`include /etc/nginx/vhosts/${domain}.conf;`)
+-   [`html/`](html/)
+    -   [`test1.evgeniy-khyst.com/`](html/test1.evgeniy-khyst.com/) - directory mounted as a webroot for `test1.evgeniy-khyst.com`. Configured in `vhosts/test1.evgeniy-khyst.com.conf`
+        -   [`index.html`](html/test1.evgeniy-khyst.com/index.html)
+    -   [`test2.evgeniy-khyst.com/`](html/test2.evgeniy-khyst.com/) - directory mounted as a webroot for `test2.evgeniy-khyst.com`. Configured in `vhosts/test2.evgeniy-khyst.com.conf`
+        -   [`index.html`](html/test2.evgeniy-khyst.com/index.html)
+-   [`certbot/`](certbot/)
+    -   [`Dockerfile`](certbot/Dockerfile)
+    -   [`certbot.sh`](certbot/certbot.sh) - entrypoint script
+-   [`cron/`](cron/)
+    -   [`Dockerfile`](cron/Dockerfile)
+    -   [`renew_certs.sh`](cron/renew_certs.sh) - script executed on a daily basis to try to renew certificates
 
 ## <a id="bcd6f4d91c9b46c9af4d5b8c4a07db77"></a>Configuration file structure
 
@@ -320,9 +320,9 @@ CERTBOT_RSA_KEY_SIZE=4096
 
 Configuration parameters:
 
-- `DOMAINS` - a space separated list of domains to manage certificates for
-- `CERTBOT_EMAILS` - a space separated list of email for corresponding domains. If not specified, certificates will be obtained with `--register-unsafely-without-email`
-- `CERTBOT_TEST_CERT` - use Let's Encrypt staging server (`--test-cert`)
+-   `DOMAINS` - a space separated list of domains to manage certificates for
+-   `CERTBOT_EMAILS` - a space separated list of email for corresponding domains. If not specified, certificates will be obtained with `--register-unsafely-without-email`
+-   `CERTBOT_TEST_CERT` - use Let's Encrypt staging server (`--test-cert`)
 
 Let's Encrypt has rate limits. So, while testing it's better to use staging server by setting `CERTBOT_TEST_CERT=1` (default value).
 When you are ready to use production Let's Encrypt server, set `CERTBOT_TEST_CERT=0`.
@@ -333,8 +333,8 @@ SSL in Nginx is configured accoring to best practices to get A+ rating in [SSL L
 
 Read more about the best practices and rating:
 
-- https://github.com/ssllabs/research/wiki/SSL-and-TLS-Deployment-Best-Practices
-- https://github.com/ssllabs/research/wiki/SSL-Server-Rating-Guide
+-   https://github.com/ssllabs/research/wiki/SSL-and-TLS-Deployment-Best-Practices
+-   https://github.com/ssllabs/research/wiki/SSL-Server-Rating-Guide
 
 ## <a id="90d955c4-2684-11ed-a261-0242ac120002"></a>Removing a domain name from a running solution
 
@@ -346,11 +346,9 @@ Remove the `domain.to.remove.com.conf` file from `vhost`
 
 Remove the domain name from [`config.env`](config.env)
 
-### <a id="90d95ace-2684-11ed-a261-0242ac120002"></a>Step 3 - Update Docker containers 
+### <a id="90d95ace-2684-11ed-a261-0242ac120002"></a>Step 3 - Update Docker containers
 
 ```bash
 docker compose down
-docker volume rm nginx_conf
-docker volume create --name=nginx_conf
 docker compose up -d
 ```

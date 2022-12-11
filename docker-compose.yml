@@ -7,11 +7,12 @@ services:
     env_file:
       - ./config.env
     volumes:
-      - nginx_conf:/etc/nginx/sites
+      - ./data/etc/nginx/sites:/etc/nginx/sites
+      - ./data/etc/nginx/conf.d:/etc/nginx/conf.d
       - letsencrypt_certs:/etc/letsencrypt
       - certbot_acme_challenge:/var/www/certbot
-      - ./vhosts:/etc/nginx/vhosts
-      - ./html:/var/www/html
+      - global_certs:/etc/nginx/global_certs
+      - dummy_certs:/etc/nginx/dummy_certs
     ports:
       - "80:80"
       - "443:443"
@@ -37,7 +38,9 @@ services:
     restart: unless-stopped
 
 volumes:
-  nginx_conf:
+  global_certs:
+    external: true
+  dummy_certs:
     external: true
   letsencrypt_certs:
     external: true
