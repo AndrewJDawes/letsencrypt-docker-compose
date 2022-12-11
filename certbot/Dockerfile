@@ -1,4 +1,4 @@
-FROM certbot/certbot:latest
+FROM certbot/certbot:v1.7.0
 
 RUN apk update && \
     apk add --no-cache bash --no-cache docker-cli docker-cli-compose
