@@ -5,7 +5,7 @@ RUN apk update && \
 
 COPY certbot.sh /opt/
 
-RUN chmod +x /opt/certbot.sh
+RUN chmod 755 /opt/certbot.sh
 
 RUN apk update && \
     apk add --no-cache docker-cli docker-cli-compose
