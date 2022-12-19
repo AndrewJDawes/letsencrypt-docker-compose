@@ -1,4 +1,5 @@
-FROM certbot/certbot:v2.1.0
+ARG ARCH=
+FROM certbot/certbot:${ARCH}-latest
 
 RUN apk update && \
     apk add --no-cache bash --no-cache docker-cli docker-cli-compose

@@ -1,4 +1,5 @@
-FROM nginx:1.23.2-alpine
+ARG ARCH=
+FROM ${ARCH}/nginx:1.23.2-alpine
 
 RUN apk add --no-cache openssl
 
